@@ -1,0 +1,16 @@
+{
+  "name": "war-news-arabic-render-ready",
+  "version": "5.0.0",
+  "description": "Arabic live war news dashboard ready for Render deployment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "axios": "latest",
+    "cors": "latest",
+    "express": "latest",
+    "rss-parser": "latest"
+  }
+}

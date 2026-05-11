@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>WarRoom X — غرفة أخبار الحرب</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="aurora"></div>
+  <header class="commandBar">
+    <div class="brand">
+      <div class="brandMark"><span></span></div>
+      <div>
+        <h1>WarRoom X</h1>
+        <p>مركز أخبار حي — عشرات المصادر والمنصات</p>
+      </div>
+    </div>
+    <div class="topActions">
+      <button id="focusBtn">وضع القيادة</button>
+      <button id="soundBtn">🔕 الصوت</button>
+      <button id="refreshBtn">تحديث الآن</button>
+      <div id="clock" class="clock">--:--</div>
+    </div>
+  </header>
+
+  <section class="redline">
+    <b>LIVE INTEL FEED</b>
+    <div id="ticker">يتم جلب الأخبار الحقيقية الآن...</div>
+  </section>
+
+  <main class="shell">
+    <section class="heroPanel">
+      <div class="heroCopy">
+        <div class="eyebrow">WARROOM DASHBOARD</div>
+        <h2>واجهة جديدة بالكامل — أسرع، أذكى، وأقوى بصريًا</h2>
+        <p>بدون مسارات توقع. الخريطة الآن تعرض فقط مناطق توتر ومراكز أخبار، والتنبيه الأحمر يظهر عند الأخبار العاجلة أو خبر صواريخ من المصادر.</p>
+        <div class="heroButtons">
+          <button id="testAlertBtn">🚨 تجربة عاجل</button>
+          <button id="readBtn">🔊 اقرأ أهم خبر</button>
+          <button id="debugBtn">فحص المصادر</button>
+        </div>
+      </div>
+      <div class="threatDial">
+        <svg viewBox="0 0 220 220">
+          <circle cx="110" cy="110" r="88" class="dialTrack"/>
+          <circle cx="110" cy="110" r="88" class="dialProgress" id="dialProgress"/>
+        </svg>
+        <div class="dialText"><strong id="tensionScore">--</strong><span>%</span><small id="tensionLabel">جار التحليل</small></div>
+      </div>
+    </section>
+
+    <section class="quickStats">
+      <article><span>الأخبار</span><b id="newsCount">0</b><em>خبر متابع</em></article>
+      <article><span>العاجل</span><b id="hotCount">0</b><em>خطورة عالية</em></article>
+      <article><span>آخر تحديث</span><b id="lastUpdate">--</b><em>حسب جهازك</em></article>
+      <article><span>أقوى مصدر</span><b id="topSource">--</b><em>الأكثر نشرًا</em></article>
+    </section>
+
+    <section class="warGrid">
+      <aside class="controlDeck panel">
+        <h3>لوحة التحكم</h3>
+        <input id="search" placeholder="ابحث: صواريخ، هرمز، ترامب..."/>
+        <select id="category">
+          <option value="all">كل التصنيفات</option>
+          <option>إسرائيل</option><option>إيران</option><option>أمريكا</option><option>صواريخ / دفاعات</option><option>اقتصاد / نفط</option><option>عام</option>
+        </select>
+        <select id="severityFilter"><option value="all">كل مستويات الخطر</option><option value="70">فوق 70%</option><option value="50">فوق 50%</option><option value="30">فوق 30%</option></select>
+        <button id="last5">آخر 5 دقائق فقط</button>
+        <button id="emergency">إظهار الخطر فقط</button>
+        <hr/>
+        <h3>صوت القراءة</h3>
+        <select id="voiceSelect"><option>تحميل الأصوات...</option></select>
+        <select id="voiceStyle"><option value="news">مذيع أخبار</option><option value="deep">أعمق</option><option value="fast">سريع</option><option value="calm">هادئ</option></select>
+        <button id="testVoiceBtn">تجربة الصوت</button>
+        <button id="stopVoiceBtn">إيقاف الصوت</button>
+        <hr/>
+        <div class="miniRadar"><div></div><span id="radarStatus">يراقب العاجل</span><small id="radarTime">--</small></div>
+      </aside>
+
+      <section class="centerStack">
+        <div class="mapSplit">
+          <div class="panel mapPanel">
+            <div class="panelTitle"><h3>خريطة التوتر</h3><span>بدون مسار توقعي</span></div>
+            <div id="map"></div>
+          </div>
+          <div class="panel incidentPanel">
+            <div class="panelTitle"><h3>War Pulse</h3><span>تحليل لحظي</span></div>
+            <div id="pulseList" class="pulseList"></div>
+          </div>
+        </div>
+        <div class="panel newsPanel">
+          <div class="panelTitle"><h3>الأخبار الآن</h3><span id="sourceHealth">مصادر متعددة + Google News</span></div>
+          <div id="newsList" class="newsList"><div class="loader">يتم جلب الأخبار الحقيقية الآن...</div></div>
+        </div>
+      </section>
+
+      <aside class="intelDeck">
+        <section class="panel"><div class="panelTitle"><h3>Timeline</h3><span>آخر الأحداث</span></div><div id="timeline" class="timeline"></div></section>
+        <section class="panel"><div class="panelTitle"><h3>الاقتصاد والأسواق</h3><span>تأثير تقديري</span></div><div id="markets" class="markets"></div></section>
+        <section class="panel"><div class="panelTitle"><h3>مقارنة المصادر</h3><span>روايات مختلفة</span></div><div id="compare" class="compare"></div></section>
+        <section class="panel"><div class="panelTitle"><h3>أرشيف اليوم</h3><span>ذاكرة الموقع</span></div><div id="archive" class="archive"></div></section>
+      </aside>
+    </section>
+  </main>
+
+  <div id="breakingOverlay" class="breakingOverlay hidden">
+    <div class="alertBox">
+      <button id="closeAlert" class="closeAlert">×</button>
+      <div class="alertRing"><span>🚨</span></div>
+      <div class="alertKicker">عاجل الآن</div>
+      <h2 id="alertTitle">خبر عاجل</h2>
+      <p id="alertSummary"></p>
+      <div class="alertMeta" id="alertMeta"></div>
+      <div class="alertActions"><button id="alertRead">🔊 اقرأ</button><a id="alertOpen" target="_blank">فتح المصدر</a></div>
+    </div>
+  </div>
+
+  <footer>الموقع يعتمد على مصادر RSS عامة. ليس إنذارًا رسميًا ولا رادارًا عسكريًا. تأكد دائمًا من تطبيقات الإنذار الرسمية.</footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
