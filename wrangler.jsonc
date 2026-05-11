@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "warroom-old-design",
+  "name": "war-news-arabic-render-ready",
   "main": "src/worker.js",
   "compatibility_date": "2026-05-11",
   "observability": {
