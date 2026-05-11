@@ -1,16 +1,17 @@
-# WarRoom Render Fixed
+# WarRoom X Cloudflare Worker
 
-جاهز للنشر على Render.
+هذه النسخة مخصصة لـ Cloudflare Workers/Pages وتدعم:
+- /api/news
+- /api/economy
+- /api/debug
+- واجهة من public
 
-## التشغيل محلياً
+## Cloudflare settings
+Build command:
 npm install
-npm start
 
-## Render
-Build Command:
-npm install
+Deploy command:
+npx wrangler deploy
 
-Start Command:
-npm start
-
-مهم: هذه النسخة تستخدم Express 4 و Node 20 حتى لا يظهر خطأ app.get('*').
+Output directory:
+public

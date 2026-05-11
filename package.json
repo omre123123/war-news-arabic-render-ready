@@ -1,18 +1,13 @@
 {
-  "name": "warroom-render-fixed",
-  "version": "6.0.0",
-  "description": "Arabic war news dashboard - Render fixed",
-  "main": "server.js",
+  "name": "warroom-cloudflare-worker",
+  "version": "7.0.0",
+  "description": "WarRoom X Arabic news dashboard for Cloudflare Workers",
   "scripts": {
-    "start": "node server.js"
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
   },
-  "engines": {
-    "node": "20.x"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.18.3",
-    "rss-parser": "^3.13.0"
+  "devDependencies": {
+    "wrangler": "^4.90.0"
   },
   "license": "MIT"
 }
