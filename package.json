@@ -1,7 +1,7 @@
 {
-  "name": "warroom-cloudflare-worker",
-  "version": "7.0.0",
-  "description": "WarRoom X Arabic news dashboard for Cloudflare Workers",
+  "name": "warroom-cloudflare-old-design",
+  "version": "8.0.0",
+  "description": "WarRoom old design with Cloudflare Worker API",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev"

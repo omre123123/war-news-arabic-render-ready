@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "warroom-x-news",
+  "name": "warroom-old-design",
   "main": "src/worker.js",
   "compatibility_date": "2026-05-11",
   "observability": {

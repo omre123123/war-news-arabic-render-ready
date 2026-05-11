@@ -1,12 +1,8 @@
-# WarRoom X Cloudflare Worker
+# WarRoom X — Old Design Cloudflare
 
-هذه النسخة مخصصة لـ Cloudflare Workers/Pages وتدعم:
-- /api/news
-- /api/economy
-- /api/debug
-- واجهة من public
+هذه النسخة ترجع الديزاين القديم + خريطة + تنبيه أحمر + صوت + أخبار حقيقية عبر Cloudflare Worker.
 
-## Cloudflare settings
+Cloudflare:
 Build command:
 npm install
 
