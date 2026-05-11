@@ -1,12 +1,7 @@
 services:
   - type: web
-    name: war-news-arabic
+    name: warroom-news
     env: node
     plan: free
     buildCommand: npm install
     startCommand: npm start
-    healthCheckPath: /api/news
-    autoDeploy: true
-    envVars:
-      - key: NODE_ENV
-        value: production

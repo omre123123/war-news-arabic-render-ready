@@ -1,126 +1,204 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>WarRoom X — غرفة أخبار الحرب</title>
-  <link rel="preconnect" href="https://unpkg.com">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WarRoom X - أخبار الحرب</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,"Noto Sans Arabic",sans-serif;background:radial-gradient(circle at top,#2a0d0d,#050505 45%,#000);color:#fff;min-height:100vh}
+    header{position:sticky;top:0;z-index:10;background:rgba(0,0,0,.72);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,0,0,.35);padding:18px 22px;display:flex;gap:16px;align-items:center;justify-content:space-between}
+    .logo{font-size:27px;font-weight:900;letter-spacing:.5px}.live{background:#ff1616;color:#fff;padding:8px 12px;border-radius:999px;box-shadow:0 0 25px #ff0000;animation:pulse 1.2s infinite}
+    @keyframes pulse{50%{opacity:.55;transform:scale(1.04)}}.wrap{max-width:1250px;margin:auto;padding:22px}.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.panel{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.13);border-radius:24px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+    .big{font-size:42px;font-weight:900;margin:0 0 8px}.sub{color:#ccc;line-height:1.8}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.stat{background:rgba(255,0,0,.12);border:1px solid rgba(255,0,0,.26);border-radius:18px;padding:14px}.stat b{font-size:26px;display:block}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}button,input,select{border:0;border-radius:14px;padding:13px 15px;font-size:15px}button{background:#e50914;color:#fff;font-weight:800;cursor:pointer}button:hover{filter:brightness(1.15)}input,select{background:#161616;color:white;border:1px solid #333;min-width:220px}
+    .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}.news{display:grid;gap:12px}.card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:15px;transition:.2s}.card:hover{transform:translateY(-2px);border-color:rgba(255,0,0,.5)}.tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#333;color:#ddd;font-size:12px;margin-left:6px}.urgent{background:#ff1b1b;color:white;box-shadow:0 0 22px rgba(255,0,0,.45)}.missile{background:#ff4d00;color:white}.title{font-weight:900;font-size:18px;line-height:1.5}.meta{font-size:12px;color:#aaa;margin:8px 0}.content{color:#ddd;line-height:1.7}.source{color:#ffb3b3;text-decoration:none;font-weight:800}.side h3{margin-top:0}.map{height:330px;border-radius:22px;background:linear-gradient(135deg,#140707,#1b1b1b);position:relative;overflow:hidden;border:1px solid rgba(255,0,0,.2)}.radar{position:absolute;inset:20px;border-radius:50%;border:1px solid rgba(255,0,0,.4);box-shadow:0 0 50px rgba(255,0,0,.25) inset}.dot{position:absolute;width:20px;height:20px;border-radius:50%;background:red;box-shadow:0 0 30px red}.d1{top:42%;right:42%}.d2{top:35%;right:18%;background:orange;box-shadow:0 0 30px orange}.d3{top:58%;right:62%;background:yellow;box-shadow:0 0 25px yellow}.alertOverlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(150,0,0,.86);backdrop-filter:blur(8px);align-items:center;justify-content:center;text-align:center;padding:20px}.alertBox{max-width:850px;border:2px solid #fff;border-radius:30px;padding:35px;background:rgba(0,0,0,.35);box-shadow:0 0 80px #ff0000;animation:shake .3s infinite alternate}.alertBox h1{font-size:58px;margin:0 0 12px}@keyframes shake{from{transform:translateX(-3px)}to{transform:translateX(3px)}}.hidden{display:none}@media(max-width:850px){.hero,.grid{grid-template-columns:1fr}.big{font-size:30px}.alertBox h1{font-size:38px}}
+  </style>
 </head>
 <body>
-  <div class="noise"></div>
-  <div class="aurora"></div>
-  <header class="commandBar">
-    <div class="brand">
-      <div class="brandMark"><span></span></div>
-      <div>
-        <h1>WarRoom X</h1>
-        <p>مركز أخبار حي — عشرات المصادر والمنصات</p>
-      </div>
+  <div class="alertOverlay" id="alertOverlay">
+    <div class="alertBox">
+      <h1>🚨 تحذير عاجل</h1>
+      <h2 id="alertTitle">خبر عاجل</h2>
+      <p id="alertText">تم رصد خبر عاجل من المصادر.</p>
+      <button onclick="closeAlert()">إغلاق</button>
+      <button onclick="openAlertSource()">فتح المصدر</button>
     </div>
-    <div class="topActions">
-      <button id="focusBtn">وضع القيادة</button>
-      <button id="soundBtn">🔕 الصوت</button>
-      <button id="refreshBtn">تحديث الآن</button>
-      <div id="clock" class="clock">--:--</div>
-    </div>
+  </div>
+
+  <header>
+    <div class="logo">WarRoom X</div>
+    <div class="live">LIVE</div>
   </header>
 
-  <section class="redline">
-    <b>LIVE INTEL FEED</b>
-    <div id="ticker">يتم جلب الأخبار الحقيقية الآن...</div>
-  </section>
-
-  <main class="shell">
-    <section class="heroPanel">
-      <div class="heroCopy">
-        <div class="eyebrow">WARROOM DASHBOARD</div>
-        <h2>واجهة جديدة بالكامل — أسرع، أذكى، وأقوى بصريًا</h2>
-        <p>بدون مسارات توقع. الخريطة الآن تعرض فقط مناطق توتر ومراكز أخبار، والتنبيه الأحمر يظهر عند الأخبار العاجلة أو خبر صواريخ من المصادر.</p>
-        <div class="heroButtons">
-          <button id="testAlertBtn">🚨 تجربة عاجل</button>
-          <button id="readBtn">🔊 اقرأ أهم خبر</button>
-          <button id="debugBtn">فحص المصادر</button>
+  <main class="wrap">
+    <section class="hero">
+      <div class="panel">
+        <h1 class="big">غرفة أخبار الحرب</h1>
+        <p class="sub">يجمع أخبار إسرائيل وإيران وأمريكا من مصادر متعددة، يحدث تلقائيًا، ويعرض تنبيه أحمر عند الأخبار العاجلة أو الصواريخ.</p>
+        <div class="stats">
+          <div class="stat"><b id="count">0</b> خبر</div>
+          <div class="stat"><b id="urgentCount">0</b> عاجل</div>
+          <div class="stat"><b id="lastUpdate">--</b> تحديث</div>
         </div>
       </div>
-      <div class="threatDial">
-        <svg viewBox="0 0 220 220">
-          <circle cx="110" cy="110" r="88" class="dialTrack"/>
-          <circle cx="110" cy="110" r="88" class="dialProgress" id="dialProgress"/>
-        </svg>
-        <div class="dialText"><strong id="tensionScore">--</strong><span>%</span><small id="tensionLabel">جار التحليل</small></div>
+      <div class="panel">
+        <h3>مؤشر الخطر</h3>
+        <div class="map">
+          <div class="radar"></div>
+          <div class="dot d1" title="إسرائيل"></div>
+          <div class="dot d2" title="إيران"></div>
+          <div class="dot d3" title="المنطقة"></div>
+        </div>
       </div>
     </section>
 
-    <section class="quickStats">
-      <article><span>الأخبار</span><b id="newsCount">0</b><em>خبر متابع</em></article>
-      <article><span>العاجل</span><b id="hotCount">0</b><em>خطورة عالية</em></article>
-      <article><span>آخر تحديث</span><b id="lastUpdate">--</b><em>حسب جهازك</em></article>
-      <article><span>أقوى مصدر</span><b id="topSource">--</b><em>الأكثر نشرًا</em></article>
-    </section>
+    <div class="controls">
+      <button onclick="loadNews(true)">تحديث الآن</button>
+      <button onclick="testAlert()">تجربة التحذير</button>
+      <button onclick="toggleSound()" id="soundBtn">الصوت: شغال</button>
+      <input id="search" placeholder="ابحث: صواريخ، هرمز، ترامب..." oninput="renderNews()" />
+      <select id="filter" onchange="renderNews()">
+        <option value="all">كل الأخبار</option>
+        <option value="urgent">عاجل فقط</option>
+        <option value="missile">صواريخ فقط</option>
+      </select>
+    </div>
 
-    <section class="warGrid">
-      <aside class="controlDeck panel">
-        <h3>لوحة التحكم</h3>
-        <input id="search" placeholder="ابحث: صواريخ، هرمز، ترامب..."/>
-        <select id="category">
-          <option value="all">كل التصنيفات</option>
-          <option>إسرائيل</option><option>إيران</option><option>أمريكا</option><option>صواريخ / دفاعات</option><option>اقتصاد / نفط</option><option>عام</option>
-        </select>
-        <select id="severityFilter"><option value="all">كل مستويات الخطر</option><option value="70">فوق 70%</option><option value="50">فوق 50%</option><option value="30">فوق 30%</option></select>
-        <button id="last5">آخر 5 دقائق فقط</button>
-        <button id="emergency">إظهار الخطر فقط</button>
-        <hr/>
-        <h3>صوت القراءة</h3>
-        <select id="voiceSelect"><option>تحميل الأصوات...</option></select>
-        <select id="voiceStyle"><option value="news">مذيع أخبار</option><option value="deep">أعمق</option><option value="fast">سريع</option><option value="calm">هادئ</option></select>
-        <button id="testVoiceBtn">تجربة الصوت</button>
-        <button id="stopVoiceBtn">إيقاف الصوت</button>
-        <hr/>
-        <div class="miniRadar"><div></div><span id="radarStatus">يراقب العاجل</span><small id="radarTime">--</small></div>
-      </aside>
-
-      <section class="centerStack">
-        <div class="mapSplit">
-          <div class="panel mapPanel">
-            <div class="panelTitle"><h3>خريطة التوتر</h3><span>بدون مسار توقعي</span></div>
-            <div id="map"></div>
-          </div>
-          <div class="panel incidentPanel">
-            <div class="panelTitle"><h3>War Pulse</h3><span>تحليل لحظي</span></div>
-            <div id="pulseList" class="pulseList"></div>
-          </div>
-        </div>
-        <div class="panel newsPanel">
-          <div class="panelTitle"><h3>الأخبار الآن</h3><span id="sourceHealth">مصادر متعددة + Google News</span></div>
-          <div id="newsList" class="newsList"><div class="loader">يتم جلب الأخبار الحقيقية الآن...</div></div>
-        </div>
-      </section>
-
-      <aside class="intelDeck">
-        <section class="panel"><div class="panelTitle"><h3>Timeline</h3><span>آخر الأحداث</span></div><div id="timeline" class="timeline"></div></section>
-        <section class="panel"><div class="panelTitle"><h3>الاقتصاد والأسواق</h3><span>تأثير تقديري</span></div><div id="markets" class="markets"></div></section>
-        <section class="panel"><div class="panelTitle"><h3>مقارنة المصادر</h3><span>روايات مختلفة</span></div><div id="compare" class="compare"></div></section>
-        <section class="panel"><div class="panelTitle"><h3>أرشيف اليوم</h3><span>ذاكرة الموقع</span></div><div id="archive" class="archive"></div></section>
+    <section class="grid">
+      <div class="panel">
+        <h2>آخر الأخبار</h2>
+        <div id="status" class="sub">يتم جلب الأخبار...</div>
+        <div id="news" class="news"></div>
+      </div>
+      <aside class="panel side">
+        <h3>الاقتصاد والأسواق</h3>
+        <div id="economy" class="news"></div>
       </aside>
     </section>
   </main>
 
-  <div id="breakingOverlay" class="breakingOverlay hidden">
-    <div class="alertBox">
-      <button id="closeAlert" class="closeAlert">×</button>
-      <div class="alertRing"><span>🚨</span></div>
-      <div class="alertKicker">عاجل الآن</div>
-      <h2 id="alertTitle">خبر عاجل</h2>
-      <p id="alertSummary"></p>
-      <div class="alertMeta" id="alertMeta"></div>
-      <div class="alertActions"><button id="alertRead">🔊 اقرأ</button><a id="alertOpen" target="_blank">فتح المصدر</a></div>
-    </div>
-  </div>
+  <script>
+    let allNews = [];
+    let lastUrgentKey = localStorage.getItem("lastUrgentKey") || "";
+    let alertLink = "#";
+    let soundOn = true;
 
-  <footer>الموقع يعتمد على مصادر RSS عامة. ليس إنذارًا رسميًا ولا رادارًا عسكريًا. تأكد دائمًا من تطبيقات الإنذار الرسمية.</footer>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js"></script>
+    function beep(){
+      if(!soundOn) return;
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = "sawtooth"; o.frequency.value = 760;
+        g.gain.setValueAtTime(.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(.28, ctx.currentTime + .04);
+        g.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + 1.1);
+        o.start(); o.stop(ctx.currentTime + 1.15);
+      }catch(e){}
+    }
+
+    function timeAgo(d){
+      const t = new Date(d).getTime();
+      if(!t) return "";
+      const s = Math.floor((Date.now()-t)/1000);
+      if(s < 60) return `قبل ${s} ثانية`;
+      if(s < 3600) return `قبل ${Math.floor(s/60)} دقيقة`;
+      return `قبل ${Math.floor(s/3600)} ساعة`;
+    }
+
+    function renderNews(){
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      const f = document.getElementById("filter").value;
+      let list = allNews.filter(n => {
+        const text = `${n.title} ${n.content} ${n.source}`.toLowerCase();
+        if(q && !text.includes(q)) return false;
+        if(f === "urgent" && !n.urgent) return false;
+        if(f === "missile" && !n.missile) return false;
+        return true;
+      });
+
+      document.getElementById("news").innerHTML = list.map(n => `
+        <article class="card">
+          <div>
+            <span class="tag ${n.urgent ? 'urgent' : ''}">${n.level || 'مراقبة'}</span>
+            ${n.missile ? '<span class="tag missile">صواريخ</span>' : ''}
+          </div>
+          <div class="title">${escapeHtml(n.title)}</div>
+          <div class="meta">${escapeHtml(n.source || n.feed || '')} • ${timeAgo(n.pubDate)}</div>
+          <div class="content">${escapeHtml(n.content || '')}</div>
+          <a class="source" href="${n.link}" target="_blank" rel="noopener">فتح المصدر</a>
+        </article>
+      `).join("") || `<p class="sub">لا توجد أخبار مطابقة.</p>`;
+    }
+
+    function escapeHtml(str){
+      return String(str || "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function showAlert(n){
+      alertLink = n.link || "#";
+      document.getElementById("alertTitle").textContent = n.title || "خبر عاجل";
+      document.getElementById("alertText").textContent = n.content || "تم رصد خبر عاجل من المصادر.";
+      document.getElementById("alertOverlay").style.display = "flex";
+      beep();
+    }
+
+    function closeAlert(){ document.getElementById("alertOverlay").style.display = "none"; }
+    function openAlertSource(){ window.open(alertLink, "_blank"); }
+    function testAlert(){ showAlert({title:"تجربة تحذير صواريخ", content:"هذا اختبار للتنبيه الأحمر والصوت.", link:"#"}); }
+    function toggleSound(){ soundOn = !soundOn; document.getElementById("soundBtn").textContent = "الصوت: " + (soundOn ? "شغال" : "مطفي"); }
+
+    async function loadNews(manual=false){
+      const status = document.getElementById("status");
+      if(manual) status.textContent = "يتم التحديث الآن...";
+      try{
+        const res = await fetch("/api/news?x=" + Date.now());
+        const data = await res.json();
+        if(!data.ok && (!data.items || !data.items.length)) throw new Error(data.details || data.error || "فشل الجلب");
+        allNews = data.items || [];
+        document.getElementById("count").textContent = allNews.length;
+        document.getElementById("urgentCount").textContent = allNews.filter(n => n.urgent).length;
+        document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString("ar");
+        status.textContent = data.cached ? "تم عرض نسخة سريعة محفوظة." : "تم جلب الأخبار بنجاح.";
+        renderNews();
+
+        const urgent = allNews.find(n => n.urgent || n.missile);
+        if(urgent){
+          const key = urgent.title;
+          if(key && key !== lastUrgentKey){
+            lastUrgentKey = key;
+            localStorage.setItem("lastUrgentKey", key);
+            showAlert(urgent);
+          }
+        }
+      }catch(e){
+        status.textContent = "تعذر جلب الأخبار الآن. الموقع لم يعلق. جرّب تحديث الآن أو /api/debug";
+      }
+    }
+
+    async function loadEconomy(){
+      try{
+        const res = await fetch("/api/economy?x=" + Date.now());
+        const data = await res.json();
+        const items = data.items || [];
+        document.getElementById("economy").innerHTML = items.slice(0,8).map(n => `
+          <article class="card">
+            <div class="title">${escapeHtml(n.title)}</div>
+            <div class="meta">${escapeHtml(n.source || '')} • ${timeAgo(n.pubDate)}</div>
+            <a class="source" href="${n.link}" target="_blank" rel="noopener">فتح</a>
+          </article>
+        `).join("") || `<p class="sub">تعذر جلب الاقتصاد حالياً.</p>`;
+      }catch(e){
+        document.getElementById("economy").innerHTML = `<p class="sub">تعذر جلب الاقتصاد.</p>`;
+      }
+    }
+
+    loadNews();
+    loadEconomy();
+    setInterval(loadNews, 7000);
+    setInterval(loadEconomy, 60000);
+  </script>
 </body>
 </html>

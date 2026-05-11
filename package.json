@@ -1,16 +1,18 @@
 {
-  "name": "war-news-arabic-render-ready",
-  "version": "5.0.0",
-  "description": "Arabic live war news dashboard ready for Render deployment",
+  "name": "warroom-render-fixed",
+  "version": "6.0.0",
+  "description": "Arabic war news dashboard - Render fixed",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "20.x"
   },
   "dependencies": {
-    "axios": "latest",
-    "cors": "latest",
-    "express": "latest",
-    "rss-parser": "latest"
-  }
+    "cors": "^2.8.5",
+    "express": "^4.18.3",
+    "rss-parser": "^3.13.0"
+  },
+  "license": "MIT"
 }
